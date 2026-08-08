@@ -1,7 +1,7 @@
 import { memo, type ReactNode } from 'react';
-import { useAuth } from '@clerk/clerk-react';
 import { Navigate } from 'react-router-dom';
-import { ROUTES } from '../../constants';
+import { useAuth } from '@/providers';
+import { ROUTES } from '@/constants';
 
 interface PublicRouteProps {
   children: ReactNode;

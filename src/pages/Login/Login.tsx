@@ -9,9 +9,9 @@ import {
   CheckIcon,
   GoogleIcon,
   ErrorMessage,
-} from '../../components';
-import { useLoginForm, useTiltEffect } from '../../hooks';
-import { ROUTES } from '../../constants';
+} from '@/components';
+import { useLoginForm, useTiltEffect } from '@/hooks';
+import { ROUTES } from '@/constants';
 import styles from './Login.module.css';
 
 // Memoized sub-components for performance

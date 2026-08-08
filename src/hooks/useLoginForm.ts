@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, type FormEvent, type ChangeEvent } from 'react';
-import { useSignIn, useSignUp } from '@clerk/clerk-react';
-import { VALIDATION, VALIDATION_MESSAGES, AUTH, AUTH_MESSAGES } from '../constants';
-import { getClerkErrorMessage } from '../utils';
+import { useAuth } from '@/providers';
+import { VALIDATION, VALIDATION_MESSAGES, AUTH_MESSAGES } from '@/constants';
 
 export type AuthMode = 'signin' | 'signup';
 
@@ -64,8 +63,7 @@ const validatePassword = (password: string): string | undefined => {
 export const useLoginForm = (
   onSuccess?: (data: { email: string; mode: AuthMode }) => void
 ): UseLoginFormReturn => {
-  const { signIn, setActive: setSignInActive, isLoaded: isSignInLoaded } = useSignIn();
-  const { signUp, setActive: setSignUpActive, isLoaded: isSignUpLoaded } = useSignUp();
+  const { signIn, signUp, signInWithGoogle, isLoaded } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>('signin');
   const [formState, setFormState] = useState<FormState>(initialFormState);
@@ -126,64 +124,42 @@ export const useLoginForm = (
   }, []);
 
   const handleSignIn = useCallback(async () => {
-    if (!isSignInLoaded || !signIn) {
+    if (!isLoaded) {
       setErrors({ general: AUTH_MESSAGES.NOT_INITIALIZED });
       return;
     }
 
     const { email, password } = formStateRef.current;
 
-    try {
-      const result = await signIn.create({
-        identifier: email.trim(),
-        password,
-      });
+    const result = await signIn(email.trim(), password);
 
-      if (result.status === 'complete') {
-        await setSignInActive({ session: result.createdSessionId });
-        setStatus('success');
-        onSuccessRef.current?.({ email: email.trim(), mode: 'signin' });
-      } else {
-        setStatus('error');
-        setErrors({ general: AUTH_MESSAGES.SIGN_IN_INCOMPLETE });
-      }
-    } catch (err: unknown) {
+    if (result.success) {
+      setStatus('success');
+      onSuccessRef.current?.({ email: email.trim(), mode: 'signin' });
+    } else {
       setStatus('error');
-      setErrors({ general: getClerkErrorMessage(err, AUTH_MESSAGES.SIGN_IN_FAILED) });
+      setErrors({ general: result.error || AUTH_MESSAGES.SIGN_IN_FAILED });
     }
-  }, [isSignInLoaded, signIn, setSignInActive]);
+  }, [isLoaded, signIn]);
 
   const handleSignUp = useCallback(async () => {
-    if (!isSignUpLoaded || !signUp) {
+    if (!isLoaded) {
       setErrors({ general: AUTH_MESSAGES.NOT_INITIALIZED });
       return;
     }
 
     const { email, password } = formStateRef.current;
 
-    try {
-      const result = await signUp.create({
-        emailAddress: email.trim(),
-        password,
-      });
+    const result = await signUp(email.trim(), password);
 
-      if (result.status === 'complete') {
-        await setSignUpActive({ session: result.createdSessionId });
-        setStatus('success');
-        onSuccessRef.current?.({ email: email.trim(), mode: 'signup' });
-      } else if (result.status === 'missing_requirements') {
-        // Email verification may be required
-        setStatus('success');
-        onSuccessRef.current?.({ email: email.trim(), mode: 'signup' });
-      } else {
-        setStatus('error');
-        setErrors({ general: AUTH_MESSAGES.SIGN_UP_INCOMPLETE });
-      }
-    } catch (err: unknown) {
+    if (result.success) {
+      setStatus('success');
+      onSuccessRef.current?.({ email: email.trim(), mode: 'signup' });
+    } else {
       setStatus('error');
-      setErrors({ general: getClerkErrorMessage(err, AUTH_MESSAGES.SIGN_UP_FAILED) });
+      setErrors({ general: result.error || AUTH_MESSAGES.SIGN_UP_FAILED });
     }
-  }, [isSignUpLoaded, signUp, setSignUpActive]);
+  }, [isLoaded, signUp]);
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
@@ -206,7 +182,7 @@ export const useLoginForm = (
   );
 
   const handleGoogleAuth = useCallback(async () => {
-    if (!isSignInLoaded || !signIn) {
+    if (!isLoaded) {
       setErrors({ general: AUTH_MESSAGES.NOT_INITIALIZED });
       return;
     }
@@ -214,17 +190,14 @@ export const useLoginForm = (
     setStatus('googleAuth');
     setErrors({});
 
-    try {
-      await signIn.authenticateWithRedirect({
-        strategy: AUTH.OAUTH_STRATEGIES.GOOGLE,
-        redirectUrl: AUTH.REDIRECT_URLS.SSO_CALLBACK,
-        redirectUrlComplete: AUTH.REDIRECT_URLS.AFTER_AUTH,
-      });
-    } catch (err: unknown) {
+    const result = await signInWithGoogle();
+
+    if (!result.success) {
       setStatus('error');
-      setErrors({ general: getClerkErrorMessage(err, AUTH_MESSAGES.GOOGLE_FAILED) });
+      setErrors({ general: result.error || AUTH_MESSAGES.GOOGLE_FAILED });
     }
-  }, [isSignInLoaded, signIn]);
+    // If success, the page will redirect to Google OAuth
+  }, [isLoaded, signInWithGoogle]);
 
   const resetForm = useCallback(() => {
     setFormState(initialFormState);

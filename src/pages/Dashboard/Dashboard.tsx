@@ -1,10 +1,9 @@
-import { useUser, useClerk } from '@clerk/clerk-react';
-import { Button } from '../../components';
+import { useAuth } from '@/providers';
+import { Button } from '@/components';
 import styles from './Dashboard.module.css';
 
 export const Dashboard = () => {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -17,26 +16,22 @@ export const Dashboard = () => {
           <h1 className={styles.title}>Welcome back!</h1>
           <p className={styles.subtitle}>
             Signed in as{' '}
-            <span className={styles.email}>
-              {user?.primaryEmailAddress?.emailAddress}
-            </span>
+            <span className={styles.email}>{user?.email}</span>
           </p>
         </div>
 
         <div className={styles.card}>
           <div className={styles.userInfo}>
-            {user?.imageUrl && (
+            {user?.avatarUrl && (
               <img
-                src={user.imageUrl}
+                src={user.avatarUrl}
                 alt={user.fullName || 'User avatar'}
                 className={styles.avatar}
               />
             )}
             <div>
               <p className={styles.userName}>{user?.fullName || 'User'}</p>
-              <p className={styles.userEmail}>
-                {user?.primaryEmailAddress?.emailAddress}
-              </p>
+              <p className={styles.userEmail}>{user?.email}</p>
             </div>
           </div>
 

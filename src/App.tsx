@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Login, Dashboard, SSOCallback } from './pages';
-import { ProtectedRoute, PublicRoute, ErrorBoundary } from './components';
-import { ROUTES } from './constants';
+import { Login, Dashboard, SSOCallback } from '@/pages';
+import { ProtectedRoute, PublicRoute, ErrorBoundary } from '@/components';
+import { ROUTES } from '@/constants';
 
 function App() {
   return (

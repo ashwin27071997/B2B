@@ -1,18 +1,6 @@
 /**
- * Authentication constants
+ * Authentication messages
  */
-
-import { ROUTES } from './routes';
-
-export const AUTH = {
-  OAUTH_STRATEGIES: {
-    GOOGLE: 'oauth_google',
-  },
-  REDIRECT_URLS: {
-    SSO_CALLBACK: ROUTES.SSO_CALLBACK,
-    AFTER_AUTH: ROUTES.DASHBOARD,
-  },
-} as const;
 
 export const AUTH_MESSAGES = {
   NOT_INITIALIZED: 'Authentication not initialized. Please refresh.',

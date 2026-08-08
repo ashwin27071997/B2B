@@ -1,8 +1,8 @@
 import { memo, type ReactNode } from 'react';
-import { useAuth } from '@clerk/clerk-react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { ROUTES } from '../../constants';
-import { LoadingSpinner } from '../shared';
+import { useAuth } from '@/providers';
+import { ROUTES } from '@/constants';
+import { LoadingSpinner } from '@/components/shared';
 
 interface ProtectedRouteProps {
   children: ReactNode;
