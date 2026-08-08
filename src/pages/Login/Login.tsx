@@ -1,24 +1,56 @@
-import { Button, Input, Checkbox, Divider, Cube3D } from '../../components';
+import { useEffect, memo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  Input,
+  Checkbox,
+  Divider,
+  Cube3D,
+  CheckIcon,
+  GoogleIcon,
+  ErrorMessage,
+} from '../../components';
 import { useLoginForm, useTiltEffect } from '../../hooks';
+import { ROUTES } from '../../constants';
 import styles from './Login.module.css';
 
-const GoogleIcon = () => (
-  <span className={styles.googleIcon}>G</span>
-);
+// Memoized sub-components for performance
+const BackgroundEffects = memo(() => (
+  <div className={styles.backgroundEffects}>
+    <div className={styles.glowIndigo} />
+    <div className={styles.glowCyan} />
+    <div className={styles.grid} />
+  </div>
+));
+BackgroundEffects.displayName = 'BackgroundEffects';
 
-const CheckIcon = () => (
-  <svg width="26" height="20" viewBox="0 0 26 20" fill="none">
-    <path
-      d="M2.5 10.5L9.5 17.5 23.5 2.5"
-      stroke="#fff"
-      strokeWidth="3.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const DecorativeCubes = memo(() => (
+  <>
+    <Cube3D size={132} variant="primary" className={styles.cubeTop} />
+    <Cube3D size={92} variant="secondary" className={styles.cubeBottomLeft} />
+    <Cube3D size={64} variant="primary" className={styles.cubeBottomRight} />
+  </>
+));
+DecorativeCubes.displayName = 'DecorativeCubes';
+
+const Logo = memo(() => (
+  <div className={styles.logo}>
+    <Cube3D size={34} variant="primary" />
+    <span className={styles.logoText}>Ledgerline</span>
+  </div>
+));
+Logo.displayName = 'Logo';
+
+const GoogleIconWrapper = memo(() => (
+  <span className={styles.googleIconWrapper}>
+    <GoogleIcon size={18} />
+  </span>
+));
+GoogleIconWrapper.displayName = 'GoogleIconWrapper';
 
 export const Login = () => {
+  const navigate = useNavigate();
+
   const {
     mode,
     formState,
@@ -38,6 +70,17 @@ export const Login = () => {
   const isSignUp = mode === 'signup';
   const isBusy = status === 'submitting' || status === 'googleAuth';
   const isSuccess = status === 'success';
+  const hasError = status === 'error';
+
+  // Redirect to dashboard after successful sign in
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        navigate(ROUTES.DASHBOARD);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, navigate]);
 
   const getHeading = () => (isSignUp ? 'Create account' : 'Sign in');
   const getSubheading = () =>
@@ -55,38 +98,22 @@ export const Login = () => {
     return isSignUp ? 'Sign up with Google' : 'Continue with Google';
   };
 
-  // Combine errors for display
-  const displayError = errors.email || errors.password || errors.general;
-
   if (isSuccess) {
     return (
       <div className={styles.container}>
-        <div className={styles.backgroundEffects}>
-          <div className={styles.glowIndigo} />
-          <div className={styles.glowCyan} />
-          <div className={styles.grid} />
-        </div>
-
-        {/* Decorative cubes */}
-        <Cube3D size={132} variant="primary" className={styles.cubeTop} />
-        <Cube3D size={92} variant="secondary" className={styles.cubeBottomLeft} />
-        <Cube3D size={64} variant="primary" className={styles.cubeBottomRight} />
+        <BackgroundEffects />
+        <DecorativeCubes />
 
         <div className={styles.layout}>
-          {/* Left side - Hero */}
           <div className={styles.heroSection}>
-            <div className={styles.logo}>
-              <Cube3D size={34} variant="primary" />
-              <span className={styles.logoText}>Ledgerline</span>
-            </div>
+            <Logo />
           </div>
 
-          {/* Right side - Success State */}
           <div className={styles.formSection} ref={tiltRef}>
             <div className={styles.card}>
               <div className={styles.successContent}>
                 <span className={styles.successIcon}>
-                  <CheckIcon />
+                  <CheckIcon size={26} />
                 </span>
                 <h2 className={styles.successTitle}>
                   {isSignUp ? "You're all set" : 'Signed in'}
@@ -94,7 +121,7 @@ export const Login = () => {
                 <p className={styles.successText}>
                   {isSignUp ? 'Confirmation sent to ' : 'Loading your workspace for '}
                   <span className={styles.successEmail}>
-                    {formState.email.trim() || 'a.rowe@ledgerline.com'}
+                    {formState.email.trim() || 'you'}
                   </span>
                 </p>
                 <Button variant="secondary" onClick={resetForm}>
@@ -110,25 +137,12 @@ export const Login = () => {
 
   return (
     <div className={styles.container}>
-      {/* Background effects */}
-      <div className={styles.backgroundEffects}>
-        <div className={styles.glowIndigo} />
-        <div className={styles.glowCyan} />
-        <div className={styles.grid} />
-      </div>
-
-      {/* Decorative cubes */}
-      <Cube3D size={132} variant="primary" className={styles.cubeTop} />
-      <Cube3D size={92} variant="secondary" className={styles.cubeBottomLeft} />
-      <Cube3D size={64} variant="primary" className={styles.cubeBottomRight} />
+      <BackgroundEffects />
+      <DecorativeCubes />
 
       <div className={styles.layout}>
-        {/* Left side - Hero content */}
         <div className={styles.heroSection}>
-          <div className={styles.logo}>
-            <Cube3D size={34} variant="primary" />
-            <span className={styles.logoText}>Ledgerline</span>
-          </div>
+          <Logo />
 
           <div className={styles.badge}>
             <span className={styles.badgeDot} />
@@ -155,7 +169,6 @@ export const Login = () => {
           </div>
         </div>
 
-        {/* Right side - Login form */}
         <div className={styles.formSection} ref={tiltRef}>
           <div className={styles.card}>
             <div className={styles.formContent}>
@@ -168,7 +181,7 @@ export const Login = () => {
                 onClick={handleGoogleAuth}
                 disabled={isBusy}
                 loading={status === 'googleAuth'}
-                icon={<GoogleIcon />}
+                icon={<GoogleIconWrapper />}
                 className={styles.googleButton}
               >
                 {getGoogleText()}
@@ -201,10 +214,9 @@ export const Login = () => {
                   />
                 </div>
 
-                {displayError && !errors.email && !errors.password && (
-                  <div className={styles.errorBox}>
-                    <span className={styles.errorDot} />
-                    <span>{displayError}</span>
+                {hasError && errors.general && (
+                  <div className={styles.generalError}>
+                    <ErrorMessage message={errors.general} />
                   </div>
                 )}
 

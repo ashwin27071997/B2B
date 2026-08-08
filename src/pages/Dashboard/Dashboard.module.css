@@ -1,0 +1,84 @@
+.container {
+  min-height: 100vh;
+  width: 100%;
+  background: #08080C;
+  color: #EEF0FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.content {
+  width: 100%;
+  max-width: 480px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: rgba(238, 240, 250, 0.6);
+}
+
+.email {
+  color: #9AA4FF;
+  font-weight: 600;
+}
+
+.card {
+  padding: 28px;
+  border-radius: 20px;
+  background: linear-gradient(165deg, rgba(30, 31, 44, 0.96), rgba(14, 14, 20, 0.97));
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(110, 123, 255, 0.4);
+}
+
+.userName {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.userEmail {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(238, 240, 250, 0.5);
+}
+
+.placeholder {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: rgba(238, 240, 250, 0.5);
+  line-height: 1.6;
+}

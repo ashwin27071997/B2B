@@ -241,18 +241,10 @@
   margin-top: 26px;
 }
 
-.googleIcon {
-  width: 22px;
-  height: 22px;
-  flex: none;
-  border-radius: 7px;
-  background: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  font-weight: 800;
-  color: #1A1B26;
-  line-height: 1;
+.googleIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Form */
@@ -267,30 +259,8 @@
   gap: 14px;
 }
 
-.errorBox {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.generalError {
   margin-top: 14px;
-  padding: 10px 13px;
-  border-radius: 11px;
-  background: rgba(255, 107, 138, 0.1);
-  border: 1px solid rgba(255, 107, 138, 0.28);
-}
-
-.errorDot {
-  width: 6px;
-  height: 6px;
-  flex: none;
-  border-radius: 50%;
-  background: #FF6B8A;
-  box-shadow: 0 0 8px #FF6B8A;
-}
-
-.errorBox span:last-child {
-  font-size: 13px;
-  font-weight: 600;
-  color: #FF9DB2;
 }
 
 .formActions {
