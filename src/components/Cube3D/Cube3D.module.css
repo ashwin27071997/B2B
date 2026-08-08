@@ -14,7 +14,7 @@
 
 /* Primary variant (Indigo) */
 .primary .face {
-  background: linear-gradient(150deg, #8B95FF, #5A66F0);
+  background: linear-gradient(150deg, var(--color-primary-light), var(--color-primary-dark));
 }
 
 .primary .faceSide {
@@ -22,12 +22,12 @@
 }
 
 .primary .faceTop {
-  background: linear-gradient(150deg, #B4BBFF, #8B95FF);
+  background: linear-gradient(150deg, #B4BBFF, var(--color-primary-light));
 }
 
 /* Secondary variant (Aqua/Cyan) */
 .secondary .face {
-  background: linear-gradient(150deg, #5FD6E8, #1E9FB4);
+  background: var(--color-secondary-gradient);
 }
 
 .secondary .faceSide {
@@ -35,5 +35,5 @@
 }
 
 .secondary .faceTop {
-  background: linear-gradient(150deg, #9BE7F4, #5FD6E8);
+  background: linear-gradient(150deg, #9BE7F4, var(--color-secondary-light));
 }

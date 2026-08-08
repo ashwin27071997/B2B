@@ -14,7 +14,7 @@ export const SSOCallback = () => {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session) {
-        navigate(ROUTES.DASHBOARD, { replace: true });
+        navigate(ROUTES.BUSINESS_ONBOARDING, { replace: true });
       } else {
         // If no session, redirect to login
         navigate(ROUTES.LOGIN, { replace: true });

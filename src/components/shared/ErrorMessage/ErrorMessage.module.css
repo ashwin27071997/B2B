@@ -3,9 +3,9 @@
   align-items: center;
   gap: 9px;
   padding: 10px 13px;
-  border-radius: 11px;
-  background: rgba(255, 107, 138, 0.1);
-  border: 1px solid rgba(255, 107, 138, 0.28);
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
 }
 
 .dot {
@@ -13,12 +13,12 @@
   height: 6px;
   flex: none;
   border-radius: 50%;
-  background: #FF6B8A;
-  box-shadow: 0 0 8px #FF6B8A;
+  background: var(--color-error);
+  box-shadow: 0 0 8px var(--color-error);
 }
 
 .message {
   font-size: 13px;
-  font-weight: 600;
-  color: #FF9DB2;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error-light);
 }

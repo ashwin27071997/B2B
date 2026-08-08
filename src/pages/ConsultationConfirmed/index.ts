@@ -1,0 +1,1 @@
+export { ConsultationConfirmed } from './ConsultationConfirmed';

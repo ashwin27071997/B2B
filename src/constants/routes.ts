@@ -6,6 +6,10 @@
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
+  BUSINESS_ONBOARDING: '/onboarding',
+  CONSULTATION_INTRO: '/onboarding/consultation',
+  CONSULTATION_BOOKING: '/onboarding/consultation/book',
+  CONSULTATION_CONFIRMED: '/onboarding/consultation/confirmed',
   DASHBOARD: '/dashboard',
   SSO_CALLBACK: '/sso-callback',
 } as const;

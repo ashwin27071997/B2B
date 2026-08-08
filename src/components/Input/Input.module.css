@@ -12,8 +12,8 @@
 
 .label {
   font-size: 12.5px;
-  font-weight: 600;
-  color: rgba(238, 240, 250, 0.62);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-label);
 }
 
 .toggleButton {
@@ -21,16 +21,16 @@
   border: 0;
   padding: 0;
   cursor: pointer;
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9AA4FF;
-  transition: color 0.2s ease;
+  color: var(--color-text-link);
+  transition: color var(--transition-default);
 }
 
 .toggleButton:hover {
-  color: #BFC5FF;
+  color: var(--color-text-link-hover);
 }
 
 .input {
@@ -38,31 +38,31 @@
   box-sizing: border-box;
   min-height: 50px;
   padding: 13px 15px;
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: var(--font-primary);
   font-size: 15px;
-  font-weight: 500;
-  color: #EEF0FA;
-  caret-color: #8B95FF;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 13px;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  caret-color: var(--color-primary-light);
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-default);
+  box-shadow: var(--shadow-input);
+  transition: border-color var(--transition-default), box-shadow var(--transition-default);
 }
 
 .input::placeholder {
-  color: rgba(238, 240, 250, 0.34);
+  color: var(--color-text-placeholder);
   opacity: 1;
 }
 
 .input:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--color-border-hover);
 }
 
 .input:focus {
-  border-color: #6E7BFF;
+  border-color: var(--color-border-focus);
   outline: none;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(110, 123, 255, 0.22);
+  box-shadow: var(--shadow-input-focus);
 }
 
 .inputError {
@@ -70,7 +70,7 @@
 }
 
 .inputError:focus {
-  border-color: #FF6B8A;
+  border-color: var(--color-error);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 107, 138, 0.22);
 }
 
@@ -78,11 +78,11 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  margin-top: 14px;
+  margin-top: var(--spacing-lg);
   padding: 10px 13px;
-  border-radius: 11px;
-  background: rgba(255, 107, 138, 0.1);
-  border: 1px solid rgba(255, 107, 138, 0.28);
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
 }
 
 .errorDot {
@@ -90,12 +90,12 @@
   height: 6px;
   flex: none;
   border-radius: 50%;
-  background: #FF6B8A;
-  box-shadow: 0 0 8px #FF6B8A;
+  background: var(--color-error);
+  box-shadow: 0 0 8px var(--color-error);
 }
 
 .error span:last-child {
   font-size: 13px;
-  font-weight: 600;
-  color: #FF9DB2;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error-light);
 }

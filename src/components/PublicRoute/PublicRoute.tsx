@@ -11,10 +11,10 @@ interface PublicRouteProps {
 
 /**
  * Route wrapper that redirects authenticated users away from public pages
- * (e.g., login page should redirect to dashboard if already signed in)
+ * (e.g., login page should redirect to business onboarding if already signed in)
  */
 export const PublicRoute = memo(
-  ({ children, redirectTo = ROUTES.DASHBOARD }: PublicRouteProps) => {
+  ({ children, redirectTo = ROUTES.BUSINESS_ONBOARDING }: PublicRouteProps) => {
     const { isLoaded, isSignedIn } = useAuth();
 
     if (!isLoaded) {
