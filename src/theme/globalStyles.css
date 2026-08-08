@@ -1,0 +1,143 @@
+/**
+ * Global Styles for Ledgerline
+ * Based on the design system specifications
+ */
+
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+/* CSS Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #08080C;
+  font-family: 'Manrope', system-ui, sans-serif;
+  color: #EEF0FA;
+  line-height: 1.55;
+}
+
+/* Scrollbar styling */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(238, 240, 250, 0.16);
+  border-radius: 99px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(238, 240, 250, 0.3);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(238, 240, 250, 0.18) transparent;
+}
+
+/* Input placeholder styling */
+input::placeholder {
+  color: rgba(238, 240, 250, 0.34);
+  opacity: 1;
+}
+
+/* Button reset */
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+/* Link styling */
+a {
+  color: #9AA4FF;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #BFC5FF;
+}
+
+/* Focus visible styling */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #6E7BFF;
+  outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(110, 123, 255, 0.3);
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Root container */
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
