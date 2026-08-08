@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free-tier stack decision sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#E9EDF2;
+  --panel:#FFFFFF;
+  --panel-alt:#F5F7FA;
+  --ink:#14202E;
+  --ink-2:#3D4E63;
+  --muted:#6B7B8F;
+  --rule:#CBD4DF;
+  --rule-hard:#9FAEC0;
+  --ok:#0E7C6B;
+  --ok-bg:#DCEFEA;
+  --warn:#9A6410;
+  --warn-bg:#F6EAD4;
+  --stop:#A02F2F;
+  --stop-bg:#F6DEDE;
+  --pick:#1B4FA0;
+  --pick-bg:#DEE8F8;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --cond:'IBM Plex Sans Condensed',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--body);font-size:14px;line-height:1.5;
+  padding:28px 20px 80px;
+}
+.wrap{max-width:1600px;margin:0 auto}
+
+/* ---- masthead ---- */
+header{border-top:3px solid var(--ink);padding-top:14px;margin-bottom:22px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;
+}
+h1{
+  font-family:var(--cond);font-weight:700;font-size:clamp(28px,4.4vw,46px);
+  letter-spacing:-.015em;line-height:1.02;margin:0 0 8px;text-transform:uppercase;
+}
+h1 em{font-style:normal;color:var(--pick)}
+.standfirst{max-width:62ch;color:var(--ink-2);font-size:14.5px;margin:0}
+
+/* ---- controls ---- */
+.controls{
+  margin:22px 0 14px;padding:14px 16px;background:var(--panel);
+  border:1px solid var(--rule);display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;
+}
+.ctl-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);display:block;margin-bottom:7px;
+}
+input[type=search]{
+  font-family:var(--body);font-size:14px;padding:8px 11px;width:250px;max-width:100%;
+  border:1px solid var(--rule-hard);background:var(--panel-alt);color:var(--ink);border-radius:0;
+}
+input[type=search]:focus{outline:2px solid var(--pick);outline-offset:1px}
+.toggles{display:flex;gap:6px;flex-wrap:wrap}
+.tog{
+  font-family:var(--mono);font-size:11px;padding:5px 9px;cursor:pointer;
+  border:1px solid var(--rule-hard);background:var(--panel-alt);color:var(--muted);
+  user-select:none;transition:all .12s;
+}
+.tog[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tog:focus-visible{outline:2px solid var(--pick);outline-offset:2px}
+
+/* ---- table ---- */
+.scroller{
+  overflow:auto;background:var(--panel);border:1px solid var(--rule-hard);
+  max-height:76vh;position:relative;
+}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:1500px}
+thead th{
+  position:sticky;top:0;z-index:3;background:var(--ink);color:#fff;
+  font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:.09em;
+  text-transform:uppercase;text-align:left;padding:11px 12px;vertical-align:bottom;
+  border-right:1px solid #2C3A4C;white-space:nowrap;
+}
+thead th .num{
+  display:block;font-family:var(--mono);font-size:9.5px;color:#8FA6C0;
+  letter-spacing:.1em;margin-bottom:3px;font-weight:400;
+}
+th.c0{left:0;z-index:5;min-width:190px}
+td.c0{
+  position:sticky;left:0;z-index:2;background:var(--panel-alt);
+  border-right:2px solid var(--rule-hard);min-width:190px;
+}
+tbody tr:hover td{background:#F0F4F9}
+tbody tr:hover td.c0{background:#E4EBF3}
+td{
+  padding:11px 12px;vertical-align:top;border-bottom:1px solid var(--rule);
+  border-right:1px solid var(--rule);font-size:12.8px;line-height:1.45;
+  min-width:180px;background:var(--panel);
+}
+td.wide{min-width:230px}
+.layer-name{font-family:var(--cond);font-weight:700;font-size:15px;letter-spacing:.01em;display:block}
+.layer-job{color:var(--muted);font-size:11.5px;margin-top:3px;display:block;line-height:1.35}
+
+/* option list */
+ul.opts{margin:0;padding:0;list-style:none}
+ul.opts li{
+  font-family:var(--mono);font-size:11.5px;padding:1.5px 0;color:var(--ink-2);
+  display:flex;gap:6px;align-items:baseline;
+}
+ul.opts li.pick{color:var(--pick);font-weight:600}
+ul.opts li.pick::before{content:"\25B6";font-size:8px;color:var(--pick)}
+ul.opts li:not(.pick)::before{content:"\00B7";color:var(--rule-hard)}
+
+.mono{font-family:var(--mono);font-size:11.5px}
+.price{font-family:var(--mono);font-weight:600;font-size:12.5px;color:var(--ink)}
+.price small{display:block;font-weight:400;color:var(--muted);font-size:10.5px;margin-top:2px;letter-spacing:0}
+
+/* status chips */
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;
+  text-transform:uppercase;padding:2px 6px;margin-bottom:5px;font-weight:600;
+}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.stop{background:var(--stop-bg);color:var(--stop)}
+.chip.none{background:#E4E9F0;color:var(--muted)}
+
+/* signature: headroom gauge */
+.gauge{margin-top:7px}
+.gauge-track{height:5px;background:#DDE4EC;position:relative;overflow:hidden}
+.gauge-fill{height:100%;display:block}
+.gauge-fill.ok{background:var(--ok)}
+.gauge-fill.warn{background:var(--warn)}
+.gauge-fill.stop{background:var(--stop)}
+.gauge-cap{
+  font-family:var(--mono);font-size:9.5px;color:var(--muted);
+  margin-top:3px;letter-spacing:.02em;line-height:1.3;display:block;
+}
+
+/* ---- footer notes ---- */
+.notes{margin-top:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.note{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--pick);padding:14px 16px}
+.note.alert{border-left-color:var(--stop)}
+.note h3{
+  font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.09em;
+  text-transform:uppercase;margin:0 0 7px;
+}
+.note p{margin:0 0 8px;font-size:12.8px;color:var(--ink-2)}
+.note p:last-child{margin-bottom:0}
+.note code{font-family:var(--mono);font-size:11.5px;background:var(--panel-alt);padding:1px 4px;border:1px solid var(--rule)}
+
+.legend{
+  margin-top:18px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em;
+}
+.legend span{display:flex;gap:6px;align-items:center}
+.sw{width:11px;height:11px;display:inline-block}
+
+.empty{padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px}
+
+/* ---- mobile: table becomes cards ---- */
+@media (max-width:820px){
+  body{padding:18px 12px 60px}
+  .scroller{max-height:none;overflow:visible;border:0;background:transparent}
+  table,thead,tbody,tr,td{display:block;width:auto;min-width:0}
+  table{min-width:0}
+  thead{display:none}
+  tbody tr{
+    background:var(--panel);border:1px solid var(--rule-hard);
+    margin-bottom:14px;padding:4px 0;
+  }
+  td{
+    border:0;border-bottom:1px solid var(--rule);min-width:0;
+    padding:9px 14px;display:block;
+  }
+  tbody tr td:last-child{border-bottom:0}
+  td.c0{position:static;border-right:0;background:var(--ink);color:#fff;padding:11px 14px}
+  td.c0 .layer-job{color:#9DB4CC}
+  tbody tr:hover td{background:var(--panel)}
+  tbody tr:hover td.c0{background:var(--ink)}
+  td::before{
+    content:attr(data-label);display:block;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;
+  }
+  td.c0::before{display:none}
+  .controls{gap:14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">
+    <span>Stack decision sheet</span>
+    <span>Rev. Aug 2026</span>
+    <span>Target: ~100-user INR storefront</span>
+  </div>
+  <h1>What a real website needs,<br>and what it costs at <em>zero</em></h1>
+  <p class="standfirst">Nineteen layers, the live options for each, and the specific point where every free tier stops being free. The headroom gauge models a single-vendor store with ~100 users and ~200 SKUs — swap your own numbers in and the picks may change.</p>
+</header>
+
+<div class="controls">
+  <div>
+    <label class="ctl-label" for="q">Filter layers</label>
+    <input type="search" id="q" placeholder="storage, otp, queue…" autocomplete="off">
+  </div>
+  <div>
+    <span class="ctl-label">Show columns</span>
+    <div class="toggles" id="toggles"></div>
+  </div>
+</div>
+
+<div class="scroller">
+  <table id="tbl">
+    <thead><tr id="hrow"></tr></thead>
+    <tbody id="body"></tbody>
+  </table>
+</div>
+<div class="empty" id="empty" style="display:none">No layer matches that filter.</div>
+
+<div class="legend">
+  <span><i class="sw" style="background:var(--pick)"></i> Recommended pick</span>
+  <span><i class="sw" style="background:var(--ok)"></i> Free tier holds comfortably</span>
+  <span><i class="sw" style="background:var(--warn)"></i> Free tier is tight — monitor it</span>
+  <span><i class="sw" style="background:var(--stop)"></i> Free tier will not cover this</span>
+</div>
+
+<div class="notes">
+  <div class="note alert">
+    <h3>Deadline: 18 Aug 2026</h3>
+    <p>Oracle cut Always Free ARM from 4 OCPU / 24 GB down to 2 OCPU / 12 GB. Free-tier instances above the new limit get terminated after that date.</p>
+    <p>Block storage was not cut — 200 GB stands. Resize the shape now if you have anything running.</p>
+  </div>
+  <div class="note">
+    <h3>The commercial-use trap</h3>
+    <p>Vercel's Hobby plan forbids commercial sites. Fine for a portfolio, a licensing problem for a client storefront. Cloudflare Pages has no equivalent clause — that is the main reason it wins the frontend row.</p>
+  </div>
+  <div class="note">
+    <h3>Three environments, two projects</h3>
+    <p>Supabase free allows 2 active projects; dev / QA / prod needs 3. Run dev on the local Supabase CLI in Docker and host only QA and prod.</p>
+    <p>Free projects also pause after 7 days idle — point an UptimeRobot monitor at the QA project's health endpoint to keep it warm between test cycles.</p>
+  </div>
+  <div class="note">
+    <h3>What you cannot get for free</h3>
+    <p>Domain (~₹900/yr), SMS OTP (~₹0.15–0.25 per message), and Razorpay's 2% per transaction. Everything else in this table has a genuine zero-cost path. Budget roughly ₹1,000 up front and ₹150–300/month.</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+const COLS = [
+  {key:"layer", n:"01", label:"What it's for"},
+  {key:"opts",  n:"02", label:"Who provides it"},
+  {key:"free",  n:"03", label:"Free tier specs"},
+  {key:"lim",   n:"04", label:"Free tier limits"},
+  {key:"paid",  n:"05", label:"Paid cost (the pick)"},
+  {key:"perf",  n:"06", label:"Performance"},
+  {key:"queue", n:"07", label:"Queues / backpressure"},
+  {key:"cold",  n:"08", label:"Cold start"},
+  {key:"prob",  n:"09", label:"Other problems"}
+];
+
+// status: ok | warn | stop | none ; pct = est. free-tier consumption for the model workload
+const ROWS = [
+{
+ name:"Website hosting", job:"Serve the storefront HTML, CSS, JS",
+ opts:[["Cloudflare Pages",1],["Vercel Hobby",0],["Netlify",0],["GitHub Pages",0]],
+ free:"500 builds/mo, unlimited bandwidth, unlimited requests, 100 custom domains, free SSL",
+ lim:"Build minutes capped; no server-side long-running compute. Vercel alternative caps at 100 GB bandwidth / 100 build min.",
+ paid:"$0 indefinitely at this scale|Workers Paid $5/mo only if you need Functions headroom",
+ perf:"Edge-cached in 300+ PoPs. India requests served from Mumbai/Chennai — 10–30 ms TTFB.",
+ perf_s:"ok",
+ queue:"Static assets never queue. Burst traffic is absorbed by the CDN, origin never sees it.",
+ cold:"None — pre-rendered files on edge disk.",
+ cold_s:"ok",
+ prob:"SSR needs Workers, which has its own limits. Build logs are thin when a deploy fails.",
+ pct:8, status:"ok", cap:"~8% of build quota at 4 deploys/day"
+},
+{
+ name:"API hosting", job:"Business logic, orders, checkout endpoints",
+ opts:[["Cloudflare Workers",1],["Render free web service",0],["Oracle A1 VM",0],["Koyeb",0]],
+ free:"Workers: 100k requests/day, 10 ms CPU per request. Render: 512 MB RAM, 750 hrs/mo. Oracle: 2 OCPU / 12 GB VM, always on.",
+ lim:"Workers: 10 ms CPU is hard — no image processing, no PDF generation. Render free sleeps after 15 min idle. Oracle needs signup approval and regional capacity.",
+ paid:"Workers Paid $5/mo → 10 M req + 30 s CPU|Render Starter $7/mo removes sleep",
+ perf:"Workers run at the edge, sub-10 ms overhead. Render free is a single small container, 100–300 ms typical.",
+ perf_s:"ok",
+ queue:"Workers scale horizontally with no queue at all. On Render, put a concurrency limit in the app and shed load with 429 + Retry-After rather than letting the container OOM.",
+ cold:"Workers: effectively zero (V8 isolates). Render free: 30–60 s wake from sleep — unacceptable for checkout.",
+ cold_s:"warn",
+ prob:"Workers force a rewrite if your API is a long-running Node/Python server. Oracle is the escape hatch but you own the patching.",
+ pct:25, status:"ok", cap:"~25k req/day est. — 25% of Workers quota"
+},
+{
+ name:"Relational database", job:"Products, orders, users, inventory",
+ opts:[["Supabase",1],["Neon",0],["Render Postgres",0],["Oracle Autonomous DB",0]],
+ free:"Supabase: 500 MB DB, 5 GB egress, 50k MAU, 2 projects. Neon: scale-to-zero branches. Oracle: 2 × ADB, 20 GB each.",
+ lim:"Supabase pauses projects after 7 days idle and takes no backups on free. Only 2 active projects vs your 3 environments. Render's free DB expires after 30 days.",
+ paid:"Supabase Pro $25/mo → 8 GB DB, 250 GB egress, daily backups|Overage $0.09/GB egress",
+ perf:"Shared compute — fine to a few hundred concurrent. Pick the Singapore or Mumbai region or you eat 150 ms+ per query from India.",
+ perf_s:"ok",
+ queue:"Connection exhaustion is the real failure. Use Supavisor/PgBouncer in transaction mode and cap the app pool — never open a connection per serverless invocation.",
+ cold:"Paused project takes 30–60 s to resume. Neon scale-to-zero wakes in ~500 ms.",
+ cold_s:"warn",
+ prob:"No free backups is the serious one — run your own pg_dump to object storage nightly.",
+ pct:35, status:"ok", cap:"~175 MB est. at 200 SKUs + 100 users"
+},
+{
+ name:"Object storage", job:"Product images, invoice PDFs, exports",
+ opts:[["Cloudflare R2",1],["Garage on Oracle VM",0],["Supabase Storage",0],["Oracle Object Storage",0]],
+ free:"R2: 10 GB, 1 M writes, 10 M reads/mo, zero egress fees. Garage self-hosted: ~150 GB on the Oracle block volume.",
+ lim:"R2 caps at 10 GB then bills. Oracle's own object storage is only 20 GB with 50k API req/mo — that ceiling breaks at ~80 pageviews/day.",
+ paid:"R2 $0.015/GB-month, egress stays free|Garage costs nothing but your time",
+ perf:"R2 serves from Cloudflare's edge. Garage is one box in one region with no CDN in front.",
+ perf_s:"ok",
+ queue:"Upload directly from browser to R2 with presigned URLs so large files never queue behind your API workers.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"MinIO is out — it went to maintenance mode in Dec 2025, pulled its web console and stopped shipping prebuilt binaries. Use Garage or SeaweedFS if self-hosting.",
+ pct:30, status:"ok", cap:"~3 GB est. of product imagery"
+},
+{
+ name:"Cache / KV", job:"Sessions, rate limits, hot product data",
+ opts:[["Upstash Redis",1],["Cloudflare KV",0],["Workers Durable Objects",0]],
+ free:"Upstash: 10k commands/day, 256 MB. Cloudflare KV: 100k reads/day, 1k writes/day.",
+ lim:"Upstash's daily command cap is easy to blow with a chatty session layer. KV writes are heavily limited and eventually consistent.",
+ paid:"Upstash pay-as-you-go $0.20 per 100k commands|Cloudflare Workers Paid $5/mo lifts KV limits",
+ perf:"Upstash global replicas, ~10–40 ms from India. KV reads are edge-local and very fast.",
+ perf_s:"ok",
+ queue:"Set aggressive TTLs and use a fail-open pattern — if the cache is unreachable, hit Postgres rather than erroring the request.",
+ cold:"None (HTTP-based, no connection pool to warm).",
+ cold_s:"ok",
+ prob:"KV eventual consistency makes it wrong for rate limiting or inventory counts. Use Durable Objects for anything needing strong consistency.",
+ pct:40, status:"ok", cap:"~4k commands/day est."
+},
+{
+ name:"Authentication", job:"Signup, login, sessions, roles",
+ opts:[["Supabase Auth",1],["Clerk",0],["Auth.js self-hosted",0],["Firebase Auth",0]],
+ free:"Supabase: 50k monthly active users, email + OAuth + phone, RLS policies. Clerk: 10k MAU.",
+ lim:"Supabase phone auth needs your own SMS provider — the free tier does not include message credits.",
+ paid:"Included in Supabase Pro $25/mo|Clerk $25/mo beyond 10k MAU",
+ perf:"JWT verification is local to your API — no network round trip per request.",
+ perf_s:"ok",
+ queue:"Rate-limit login and OTP endpoints per IP and per phone number, or you fund someone's SMS bill.",
+ cold:"Inherits whatever your API layer does.",
+ cold_s:"ok",
+ prob:"RLS policies are genuinely easy to get wrong — write pytest cases that attempt cross-tenant reads and assert they fail.",
+ pct:2, status:"ok", cap:"100 of 50k MAU"
+},
+{
+ name:"SMS OTP", job:"Mobile number verification at signup",
+ opts:[["MSG91",1],["Firebase Phone Auth",0],["Twilio Verify",0],["AWS SNS",0]],
+ free:"Firebase gives a small monthly allowance of free verifications. MSG91 and Twilio give trial credits only.",
+ lim:"There is no sustainable free tier for Indian SMS. DLT registration with TRAI is mandatory — sender ID and template must be pre-approved before a single message sends.",
+ paid:"MSG91 ~₹0.15–0.25 per SMS|~₹150–300/mo at 100 users|Twilio is 5–8× costlier for India",
+ perf:"Domestic routes deliver in 2–8 s. International gateways to Indian numbers are slower and less reliable.",
+ perf_s:"warn",
+ queue:"Never send OTP inline in the HTTP request. Push to a queue, return 202 immediately, and let the worker retry — carrier timeouts are common.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"OTP abuse is the top cost risk. Enforce per-number cooldowns, daily caps, and a resend backoff before you go live.",
+ pct:100, status:"stop", cap:"No free path — budget this line"
+},
+{
+ name:"Transactional email", job:"Order confirmations, password resets, invoices",
+ opts:[["Resend",1],["Brevo",0],["Zoho ZeptoMail",0],["AWS SES",0]],
+ free:"Resend: 3,000 emails/mo, 100/day. Brevo: 300/day. Zoho: pay-as-you-go from very low volumes.",
+ lim:"Resend's 100/day cap bites during a sale. Free tiers usually require their sending domain unless you verify your own.",
+ paid:"Resend $20/mo → 50k emails|SES $0.10 per 1,000 — cheapest at volume, worst DX",
+ perf:"Sub-second API accept; actual inbox delivery 2–30 s.",
+ perf_s:"ok",
+ queue:"Same rule as SMS — enqueue, never send inline. Bounce and complaint webhooks must be consumed or your domain reputation quietly rots.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"SPF, DKIM and DMARC must all be set on the client's domain or Gmail bins the mail. Budget half a day for deliverability setup.",
+ pct:20, status:"ok", cap:"~600 of 3,000 emails/mo est."
+},
+{
+ name:"Payments", job:"Accept INR, refunds, settlements",
+ opts:[["Razorpay",1],["Cashfree",0],["PhonePe PG",0],["Stripe India",0]],
+ free:"No monthly platform fee. Test mode is fully free and unlimited.",
+ lim:"Per-transaction commission is unavoidable. KYC and business documentation gate the live keys — start this early, it takes days.",
+ paid:"Razorpay 2% + GST per transaction|UPI often lower; international cards ~3%",
+ perf:"Checkout modal loads in 1–2 s. Settlement to bank T+2 by default.",
+ perf_s:"ok",
+ queue:"Webhooks are the source of truth, not the browser redirect. Make the handler idempotent on payment ID and return 200 fast — Razorpay retries on timeout and will double-book orders otherwise.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"Reconciliation is where these builds actually break. Store the raw webhook payload and run a daily job comparing your orders against Razorpay's settlement report.",
+ pct:100, status:"warn", cap:"2% commission — unavoidable"
+},
+{
+ name:"Background jobs", job:"Async work: emails, image resize, exports",
+ opts:[["Upstash QStash",1],["Inngest",0],["Trigger.dev",0],["BullMQ self-hosted",0]],
+ free:"QStash: 500 messages/day free, HTTP-only, no SDK. Inngest: 25k runs/mo. Trigger.dev: 50k runs.",
+ lim:"QStash free allows up to 5 retries. Inngest free carries a 30 s step timeout. Cloudflare Queues requires the paid Workers plan.",
+ paid:"QStash $0.50 per additional 10k messages|Inngest $50/mo for 100k runs and 30 min steps",
+ perf:"QStash adds one HTTP hop per job — poor for sub-100 ms pipelines, fine for everything you'd actually queue.",
+ perf_s:"ok",
+ queue:"This IS the queue layer. Make every handler idempotent, cap concurrency so a burst can't exhaust your DB pool, and route exhausted retries to a dead-letter endpoint you actually monitor.",
+ cold:"Handler inherits your API's cold start — on Workers that's negligible, on Render free it's 30–60 s and jobs will time out.",
+ cold_s:"warn",
+ prob:"Because handlers are public HTTP endpoints, they must verify QStash's signature or anyone can trigger your jobs.",
+ pct:30, status:"ok", cap:"~150 of 500 msg/day est."
+},
+{
+ name:"Scheduled jobs", job:"Nightly backups, reconciliation, digests",
+ opts:[["Cloudflare Cron Triggers",1],["GitHub Actions schedule",0],["QStash Schedules",0],["Supabase pg_cron",0]],
+ free:"Cloudflare: cron triggers included with Workers free. GitHub Actions: 2,000 min/mo on private repos, unlimited on public.",
+ lim:"GitHub's scheduled runs are best-effort and routinely fire 5–20 minutes late under load. Cloudflare crons inherit the 10 ms CPU limit.",
+ paid:"$0 at this scale|GitHub Actions $0.008/min beyond quota",
+ perf:"Trigger latency is seconds for Cloudflare, minutes for GitHub Actions.",
+ perf_s:"ok",
+ queue:"Never do the work inside the cron. Have the cron enqueue to QStash and return — that gives you retries and keeps you under the CPU ceiling.",
+ cold:"Cold invocation each fire; irrelevant for scheduled work.",
+ cold_s:"ok",
+ prob:"Overlapping runs when a job outlives its interval. Take an advisory lock in Postgres at the top of every scheduled task.",
+ pct:15, status:"ok", cap:"~300 of 2,000 Action minutes"
+},
+{
+ name:"Search", job:"Product search and filtering",
+ opts:[["Postgres full-text",1],["Meilisearch self-hosted",0],["Typesense Cloud",0],["Algolia",0]],
+ free:"Postgres FTS costs nothing extra — it's already in Supabase. Algolia free allows 10k searches/mo.",
+ lim:"Postgres FTS has no typo tolerance and weak relevance ranking. Algolia's free tier is small and pricing climbs steeply.",
+ paid:"$0 — stays in Postgres|Meilisearch on the Oracle VM is also $0 if you outgrow FTS",
+ perf:"With a GIN index, FTS answers in single-digit ms across 200 SKUs. Nothing here is a bottleneck at your catalogue size.",
+ perf_s:"ok",
+ queue:"Index maintenance is synchronous with writes in Postgres — no queue needed. External engines need a reindex queue and drift monitoring.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"Adding a search service at 200 SKUs is premature. Revisit past ~10k products or when typo tolerance starts costing you sales.",
+ pct:5, status:"ok", cap:"Negligible at 200 SKUs"
+},
+{
+ name:"Error tracking", job:"Catch exceptions before customers report them",
+ opts:[["Sentry",1],["GlitchTip self-hosted",0],["Highlight.io",0]],
+ free:"Sentry: 5,000 errors/mo, 1 user seat, 30-day retention, source maps, release tracking.",
+ lim:"One seat only, and a single noisy bug can burn the whole monthly quota in an hour.",
+ paid:"Sentry Team $26/mo|GlitchTip on the Oracle VM is $0 and Sentry-SDK compatible",
+ perf:"SDK is async and non-blocking — no measurable request latency.",
+ perf_s:"ok",
+ queue:"Set a client-side sample rate and use fingerprinting to group repeats, otherwise one loop floods the quota and hides real errors.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"Quota exhaustion silently drops events, so you go blind exactly when things are worst. Alert on quota at 70%.",
+ pct:45, status:"warn", cap:"Quota burns fast during a bad deploy"
+},
+{
+ name:"Analytics", job:"Traffic, funnels, conversion",
+ opts:[["Cloudflare Web Analytics",1],["Umami self-hosted",0],["PostHog",0],["Plausible",0]],
+ free:"Cloudflare: unlimited, cookieless, no client script needed on Pages. PostHog: 1 M events/mo.",
+ lim:"Cloudflare analytics is pageview-level only — no funnels, no user identification, no product events.",
+ paid:"$0|PostHog scales past 1 M events on usage pricing",
+ perf:"Cloudflare adds zero client-side weight when served from Pages. PostHog's SDK is ~50 KB.",
+ perf_s:"ok",
+ queue:"Batch product events client-side and flush on an interval rather than firing one request per interaction.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"Cookieless means no DPDP consent banner needed — a real advantage for an Indian consumer site. Adding PostHog reintroduces that obligation.",
+ pct:5, status:"ok", cap:"Unlimited on the pick"
+},
+{
+ name:"Uptime monitoring", job:"Know it's down before the client calls",
+ opts:[["UptimeRobot",1],["Better Stack",0],["Cloudflare Health Checks",0]],
+ free:"UptimeRobot: 50 monitors, 5-minute interval, email and webhook alerts, public status page.",
+ lim:"5-minute polling means up to 5 minutes of undetected downtime. SMS alerts are paid.",
+ paid:"UptimeRobot Pro $7/mo → 1-minute checks",
+ perf:"Negligible — a HEAD request every 5 minutes.",
+ perf_s:"ok",
+ queue:"Point one monitor at a deep health endpoint that actually touches Postgres and R2, not just a static 200. A shallow check passes while the DB is down.",
+ cold:"Doubles as the Supabase keep-alive that stops free projects pausing at 7 days idle.",
+ cold_s:"ok",
+ prob:"Alert fatigue. Route to one channel, and suppress alerts during known deploy windows.",
+ pct:6, status:"ok", cap:"3 of 50 monitors"
+},
+{
+ name:"Logs", job:"Trace what actually happened during an incident",
+ opts:[["Cloudflare Workers Logs",1],["Better Stack",0],["Axiom",0],["Loki on Oracle",0]],
+ free:"Workers Logs: real-time tail plus limited retention. Axiom: 500 GB/mo ingest. Better Stack: 1 GB, 3-day retention.",
+ lim:"Cloudflare free retention is short. Free log tiers everywhere have retention as the squeeze, not volume.",
+ paid:"Workers Paid $5/mo extends retention|Axiom stays free at your volume",
+ perf:"Async shipping. Structured JSON logging costs a few ms per request at most.",
+ perf_s:"ok",
+ queue:"Sample aggressively — log every error, but only a small percentage of successes. Never log request bodies containing payment or OTP data.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"Short retention means a bug reported on Monday about Friday's order may have no trace left. Ship anything audit-relevant to R2 as durable JSONL.",
+ pct:25, status:"ok", cap:"Retention is the constraint, not volume"
+},
+{
+ name:"CI / CD", job:"Test and deploy on every push",
+ opts:[["GitHub Actions",1],["Cloudflare Pages builds",0],["GitLab CI",0]],
+ free:"2,000 minutes/mo on private repos, unlimited on public. Pages builds are separate and don't consume Actions minutes.",
+ lim:"A slow pytest suite eats the 2,000 minutes fast — a 10-minute suite on 10 pushes/day exhausts it in under a week.",
+ paid:"$0.008/min beyond quota|Self-hosted runner on the Oracle VM makes it unlimited and free",
+ perf:"Hosted runners are 2 vCPU / 7 GB. Cache dependencies or you pay the install cost on every run.",
+ perf_s:"ok",
+ queue:"Free-tier concurrency is limited, so runs queue behind each other. Cancel superseded runs on the same branch with a concurrency group.",
+ cold:"~20–40 s runner provisioning per job.",
+ cold_s:"warn",
+ prob:"Secrets in Actions logs. Use the repo secret store and mask output — never echo an env var during debugging.",
+ pct:55, status:"warn", cap:"~1,100 of 2,000 min at your test volume"
+},
+{
+ name:"Domain, DNS, SSL, CDN", job:"The address and the pipe to it",
+ opts:[["Cloudflare Registrar + DNS",1],["Namecheap",0],["GoDaddy",0]],
+ free:"DNS, SSL certificates, CDN, DDoS protection and WAF basics are all free on Cloudflare. Registrar sells at cost with no markup.",
+ lim:"The domain itself is never free. Cloudflare Registrar does not sell every TLD — .in may need an external registrar with DNS pointed to Cloudflare.",
+ paid:"~₹900–1,200/yr for a .in|~$10/yr for .com at Cloudflare cost price",
+ perf:"Cloudflare DNS is consistently among the fastest resolvers globally. Certificates auto-renew.",
+ perf_s:"ok",
+ queue:"Not applicable — but do set sensible cache rules so the CDN absorbs traffic spikes instead of your Workers quota.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"The client should own the registrar account, per your usual arrangement. Get that in writing before launch, not after a dispute.",
+ pct:100, status:"warn", cap:"~₹900/yr — the one certain cost"
+},
+{
+ name:"Secrets management", job:"Keep API keys out of the repo",
+ opts:[["Wrangler secrets / Supabase Vault",1],["Doppler",0],["Infisical self-hosted",0]],
+ free:"Cloudflare secrets and GitHub Actions secrets are free and unlimited. Doppler free covers 3 users. Infisical is open source.",
+ lim:"Platform-native secrets don't sync across environments — you set the same key three times for dev, QA and prod.",
+ paid:"$0|Doppler $8/user/mo if you need central rotation across the team",
+ perf:"Injected at build or runtime. No latency.",
+ perf_s:"ok",
+ queue:"Not applicable.",
+ cold:"None.",
+ cold_s:"ok",
+ prob:"With 15 contractors, platform-native secrets mean everyone with repo access can redeploy with prod keys. Doppler's access control earns its cost the moment the team grows.",
+ pct:10, status:"ok", cap:"Free until the team needs rotation"
+}
+];
+
+function optsHtml(o){
+  return '<ul class="opts">'+o.map(([n,p])=>`<li class="${p?'pick':''}">${n}</li>`).join('')+'</ul>';
+}
+function priceHtml(s){
+  const parts=s.split("|");
+  return `<span class="price">${parts[0]}${parts.slice(1).map(p=>`<small>${p}</small>`).join('')}</span>`;
+}
+function gauge(r){
+  return `<div class="gauge"><div class="gauge-track"><span class="gauge-fill ${r.status}" style="width:${r.pct}%"></span></div>
+  <span class="gauge-cap">${r.cap}</span></div>`;
+}
+const CHIP={ok:'holds',warn:'tight',stop:'not covered',none:'n/a'};
+
+function render(filter=""){
+  const hrow=document.getElementById("hrow");
+  hrow.innerHTML=COLS.map((c,i)=>`<th class="c${i}" data-col="${c.key}"><span class="num">${c.n}</span>${c.label}</th>`).join('');
+
+  const f=filter.trim().toLowerCase();
+  const rows=ROWS.filter(r=>!f||JSON.stringify(r).toLowerCase().includes(f));
+  document.getElementById("empty").style.display=rows.length?"none":"block";
+  document.getElementById("tbl").style.display=rows.length?"":"none";
+
+  document.getElementById("body").innerHTML=rows.map(r=>`<tr>
+    <td class="c0" data-col="layer" data-label="Layer"><span class="layer-name">${r.name}</span><span class="layer-job">${r.job}</span></td>
+    <td data-col="opts" data-label="Who provides it">${optsHtml(r.opts)}</td>
+    <td class="wide" data-col="free" data-label="Free tier specs"><span class="chip ${r.status}">${CHIP[r.status]}</span><div>${r.free}</div>${gauge(r)}</td>
+    <td class="wide" data-col="lim" data-label="Free tier limits">${r.lim}</td>
+    <td data-col="paid" data-label="Paid cost">${priceHtml(r.paid)}</td>
+    <td class="wide" data-col="perf" data-label="Performance"><span class="chip ${r.perf_s}">${CHIP[r.perf_s]}</span><div>${r.perf}</div></td>
+    <td class="wide" data-col="queue" data-label="Queues / backpressure">${r.queue}</td>
+    <td data-col="cold" data-label="Cold start"><span class="chip ${r.cold_s}">${r.cold_s==='ok'?'none':'watch'}</span><div>${r.cold}</div></td>
+    <td class="wide" data-col="prob" data-label="Other problems">${r.prob}</td>
+  </tr>`).join('');
+
+  applyCols();
+}
+
+const hidden=new Set();
+function applyCols(){
+  document.querySelectorAll("[data-col]").forEach(el=>{
+    el.style.display = hidden.has(el.dataset.col) ? "none" : "";
+  });
+}
+
+const tg=document.getElementById("toggles");
+tg.innerHTML=COLS.slice(1).map(c=>`<button class="tog" aria-pressed="true" data-t="${c.key}">${c.n} ${c.label}</button>`).join('');
+tg.addEventListener("click",e=>{
+  const b=e.target.closest(".tog"); if(!b) return;
+  const on=b.getAttribute("aria-pressed")==="true";
+  b.setAttribute("aria-pressed",String(!on));
+  if(on) hidden.add(b.dataset.t); else hidden.delete(b.dataset.t);
+  applyCols();
+});
+
+document.getElementById("q").addEventListener("input",e=>render(e.target.value));
+render();
+</script>
+</body>
+</html>
