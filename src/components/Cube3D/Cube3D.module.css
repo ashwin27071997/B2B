@@ -1,0 +1,39 @@
+.cube {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(-30deg);
+  pointer-events: none;
+}
+
+.face,
+.faceSide,
+.faceTop {
+  position: absolute;
+  inset: 0;
+}
+
+/* Primary variant (Indigo) */
+.primary .face {
+  background: linear-gradient(150deg, var(--color-primary-light), var(--color-primary-dark));
+}
+
+.primary .faceSide {
+  background: linear-gradient(150deg, #4C57DC, #2B32A0);
+}
+
+.primary .faceTop {
+  background: linear-gradient(150deg, #B4BBFF, var(--color-primary-light));
+}
+
+/* Secondary variant (Aqua/Cyan) */
+.secondary .face {
+  background: var(--color-secondary-gradient);
+}
+
+.secondary .faceSide {
+  background: linear-gradient(150deg, #1A8497, #0F5C6B);
+}
+
+.secondary .faceTop {
+  background: linear-gradient(150deg, #9BE7F4, var(--color-secondary-light));
+}

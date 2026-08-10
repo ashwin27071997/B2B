@@ -1,0 +1,101 @@
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-label);
+}
+
+.toggleButton {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-link);
+  transition: color var(--transition-default);
+}
+
+.toggleButton:hover {
+  color: var(--color-text-link-hover);
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 13px 15px;
+  font-family: var(--font-primary);
+  font-size: 15px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  caret-color: var(--color-primary-light);
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-default);
+  box-shadow: var(--shadow-input);
+  transition: border-color var(--transition-default), box-shadow var(--transition-default);
+}
+
+.input::placeholder {
+  color: var(--color-text-placeholder);
+  opacity: 1;
+}
+
+.input:hover {
+  border-color: var(--color-border-hover);
+}
+
+.input:focus {
+  border-color: var(--color-border-focus);
+  outline: none;
+  box-shadow: var(--shadow-input-focus);
+}
+
+.inputError {
+  border-color: rgba(255, 107, 138, 0.5);
+}
+
+.inputError:focus {
+  border-color: var(--color-error);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 107, 138, 0.22);
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: var(--spacing-lg);
+  padding: 10px 13px;
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+}
+
+.errorDot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-error);
+  box-shadow: 0 0 8px var(--color-error);
+}
+
+.error span:last-child {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error-light);
+}

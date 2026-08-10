@@ -1,0 +1,32 @@
+import { memo, type ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@/providers';
+import { ROUTES } from '@/constants';
+
+interface PublicRouteProps {
+  children: ReactNode;
+  /** Route to redirect to if already authenticated */
+  redirectTo?: string;
+}
+
+/**
+ * Route wrapper that redirects authenticated users away from public pages
+ * (e.g., login page should redirect to business onboarding if already signed in)
+ */
+export const PublicRoute = memo(
+  ({ children, redirectTo = ROUTES.BUSINESS_ONBOARDING }: PublicRouteProps) => {
+    const { isLoaded, isSignedIn } = useAuth();
+
+    if (!isLoaded) {
+      return null;
+    }
+
+    if (isSignedIn) {
+      return <Navigate to={redirectTo} replace />;
+    }
+
+    return <>{children}</>;
+  }
+);
+
+PublicRoute.displayName = 'PublicRoute';

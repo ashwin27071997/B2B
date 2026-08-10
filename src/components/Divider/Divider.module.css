@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin: 22px 0;
+}
+
+.lineLeft {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border-strong));
+}
+
+.lineRight {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-border-strong), transparent);
+}
+
+.text {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+}

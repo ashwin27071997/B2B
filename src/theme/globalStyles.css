@@ -1,0 +1,263 @@
+/**
+ * Global Styles for Ledgerline
+ * Based on the design system specifications
+ */
+
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+/* ===== CSS Custom Properties (Design Tokens) ===== */
+:root {
+  /* Core backgrounds */
+  --color-bg-primary: #08080C;
+  --color-bg-card: linear-gradient(165deg, rgba(30, 31, 44, 0.96), rgba(14, 14, 20, 0.97));
+  --color-bg-card-secondary: rgba(255, 255, 255, 0.035);
+  --color-bg-input: rgba(0, 0, 0, 0.35);
+  --color-bg-glass: rgba(255, 255, 255, 0.04);
+  --color-bg-glass-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-header: rgba(14, 14, 20, 0.72);
+
+  /* Text colors */
+  --color-text-primary: #EEF0FA;
+  --color-text-secondary: rgba(238, 240, 250, 0.6);
+  --color-text-tertiary: rgba(238, 240, 250, 0.55);
+  --color-text-muted: rgba(238, 240, 250, 0.4);
+  --color-text-placeholder: rgba(238, 240, 250, 0.34);
+  --color-text-label: rgba(238, 240, 250, 0.62);
+  --color-text-link: #9AA4FF;
+  --color-text-link-hover: #BFC5FF;
+
+  /* Primary brand - Indigo */
+  --color-primary: #6E7BFF;
+  --color-primary-light: #8B95FF;
+  --color-primary-dark: #5A66F0;
+  --color-primary-darker: #4E5AE8;
+  --color-primary-gradient: linear-gradient(#7C88FF, #5A66F0);
+  --color-primary-gradient-hover: linear-gradient(#8B95FF, #6470F5);
+  --color-primary-gradient-active: linear-gradient(#5A66F0, #4E5AE8);
+
+  /* Secondary brand - Cyan/Aqua */
+  --color-secondary: #35C8DE;
+  --color-secondary-light: #5FD6E8;
+  --color-secondary-dark: #1E9FB4;
+  --color-secondary-gradient: linear-gradient(150deg, #5FD6E8, #1E9FB4);
+  --color-secondary-text: #04262C;
+
+  /* Status colors */
+  --color-success: #35C8DE;
+  --color-success-bg: rgba(53, 200, 222, 0.14);
+  --color-success-text: #7FE3F2;
+
+  --color-error: #FF6B8A;
+  --color-error-light: #FF9DB2;
+  --color-error-bg: rgba(255, 107, 138, 0.1);
+  --color-error-border: rgba(255, 107, 138, 0.28);
+
+  /* Border colors */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.08);
+  --color-border-medium: rgba(255, 255, 255, 0.11);
+  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-border-focus: #6E7BFF;
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+
+  /* Glow effects */
+  --color-glow-primary: rgba(94, 106, 240, 0.35);
+  --color-glow-secondary: rgba(53, 200, 222, 0.2);
+  --color-glow-focus: rgba(110, 123, 255, 0.22);
+
+  /* Shadows */
+  --shadow-card: 0 30px 64px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  --shadow-card-elevated: 0 40px 80px rgba(0, 0, 0, 0.62), 0 18px 60px rgba(94, 106, 240, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --shadow-button-primary: 0 12px 28px rgba(94, 106, 240, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  --shadow-button-secondary: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-input: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-input-focus: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(110, 123, 255, 0.22);
+  --shadow-icon-primary: 0 10px 24px rgba(94, 106, 240, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  --shadow-icon-secondary: 0 10px 24px rgba(30, 159, 180, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  --shadow-status-glow: 0 0 10px #35C8DE;
+
+  /* Typography */
+  --font-primary: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+  --spacing-4xl: 48px;
+  --spacing-5xl: 56px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 11px;
+  --radius-default: 13px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+  --radius-3xl: 24px;
+  --radius-full: 999px;
+
+  /* Layout */
+  --max-width-content: 1200px;
+  --max-width-form: 900px;
+  --header-height: 72px;
+  --header-height-mobile: 64px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-default: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Z-Index */
+  --z-background: -1;
+  --z-default: 1;
+  --z-header: 100;
+  --z-modal: 1000;
+}
+
+/* CSS Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #08080C;
+  font-family: 'Manrope', system-ui, sans-serif;
+  color: #EEF0FA;
+  line-height: 1.55;
+}
+
+/* Scrollbar styling */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(238, 240, 250, 0.16);
+  border-radius: 99px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(238, 240, 250, 0.3);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(238, 240, 250, 0.18) transparent;
+}
+
+/* Input placeholder styling */
+input::placeholder {
+  color: rgba(238, 240, 250, 0.34);
+  opacity: 1;
+}
+
+/* Button reset */
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+/* Link styling */
+a {
+  color: #9AA4FF;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #BFC5FF;
+}
+
+/* Focus visible styling */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #6E7BFF;
+  outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(110, 123, 255, 0.3);
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Root container */
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
