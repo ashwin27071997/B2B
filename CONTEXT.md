@@ -14,13 +14,14 @@
 | **Auth** | Supabase (migrated from Clerk) |
 | **State** | Zustand (UI) + TanStack Query (server) |
 | **Styling** | CSS Modules + CSS Variables |
-| **Server** | Express BFF (abstraction layer) |
+| **Dev Server** | Express mock server (localhost:3001) |
 | **Constraints** | FREE TIER only |
 
 ---
 
 ## Architecture Overview
 
+### Development (Current)
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        BROWSER                               │
@@ -29,21 +30,34 @@
                       │ /api/v1/*
                       ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   SERVER LAYER (BFF)                         │
-│  localhost:3001                                              │
+│                   DEV MOCK SERVER                            │
+│  localhost:3001 (server/ folder)                            │
 │  ├── JWT Verification (Supabase secret)                     │
 │  ├── Rate Limiting (100 req/min)                            │
 │  ├── Input Validation (Zod)                                 │
 │  ├── Structured Logging (Pino)                              │
-│  └── Request Forwarding                                      │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ Proxied requests
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   BACKEND SERVICE                            │
-│  (External - URL hidden from client)                        │
+│  └── Mock responses / Request Forwarding                     │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Production (Planned)
+```
+┌──────────────────┐              ┌──────────────────────────┐
+│   Frontend       │    HTTPS     │        Backend           │
+│   (Vercel)       │ ──────────►  │       (Fly.io)           │
+│                  │              │                          │
+│  React App       │              │  Express + TypeScript    │
+│                  │              │  ledgerline-api repo     │
+└──────────────────┘              └───────────┬──────────────┘
+                                              │
+                                              ▼
+                                  ┌──────────────────────────┐
+                                  │   Supabase (Postgres)    │
+                                  │   + Auth + Storage       │
+                                  └──────────────────────────┘
+```
+
+**Note:** See [TECH_STACK.md](./TECH_STACK.md) for full architecture decisions.
 
 ---
 
@@ -313,15 +327,18 @@ RATE_LIMIT_MAX_REQUESTS=100
 | 2026-08-09 | Migrated Clerk → Supabase | Free tier, simpler, all-in-one |
 | 2026-08-10 | Added CSS variables | Scalability, theme switching |
 | 2026-08-11 | Added Zustand + TanStack Query | Lightweight, type-safe |
-| 2026-08-12 | Created server BFF layer | Security, backend abstraction |
+| 2026-08-12 | Created dev mock server | Frontend development without backend |
 | 2026-08-12 | Added JWT verification | Production security requirement |
 | 2026-08-12 | Added Zod validation | Type-safe input validation |
+| 2026-08-12 | Finalized tech stack | Express + Fly.io backend, Supabase DB |
+| 2026-08-12 | Separate repos decision | Frontend (B2B) + Backend (ledgerline-api) |
 
 ---
 
 ## Reference Documents
 
 - [CODING_STANDARDS.md](./CODING_STANDARDS.md) - **Read before writing any code**
+- [TECH_STACK.md](./TECH_STACK.md) - **Full architecture and backend setup guide**
 - [stack-decision-table.html](./stack-decision-table.html) - Free tier comparison
 - [Login screen design system](./Login%20screen%20design%20system%20(1)/) - UI mockups
 
