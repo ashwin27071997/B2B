@@ -1,138 +1,71 @@
-import { memo, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/providers';
-import { ROUTES } from '@/constants';
+import { memo } from 'react';
+import { useBusinessOnboarding } from './BusinessOnboarding.hooks';
+import type { BusinessStatus } from './BusinessOnboarding.types';
 import styles from './BusinessOnboarding.module.css';
 
-// Types
-interface Business {
-  id: string;
-  name: string;
-  initials: string;
-  meta: string;
-  status: 'verified' | 'draft' | 'action';
-  gstin: string;
-}
-
-// Mock data for existing businesses found on PAN & mobile
-// In production, this would come from an API
-const mockBusinesses: Business[] = [
-  {
-    id: '1',
-    name: 'Vaayu Infra Solutions Pvt Ltd',
-    initials: 'VI',
-    meta: '29ABCDE1234F1Z5 · Private Limited · Bengaluru',
-    status: 'verified',
-    gstin: '29ABCDE1234F1Z5',
-  },
-  {
-    id: '2',
-    name: 'Meridian Textiles LLP',
-    initials: 'MT',
-    meta: '27FGHIJ5678K1Z2 · LLP · Pune',
-    status: 'draft',
-    gstin: '27FGHIJ5678K1Z2',
-  },
-  {
-    id: '3',
-    name: 'Sundara Traders & Agencies',
-    initials: 'ST',
-    meta: '33LMNOP9012Q1Z9 · Proprietorship · Coimbatore',
-    status: 'action',
-    gstin: '33LMNOP9012Q1Z9',
-  },
-];
-
-const STATUS_LABELS: Record<Business['status'], string> = {
+// Status display configuration
+const STATUS_LABELS: Record<BusinessStatus, string> = {
   verified: 'Verified',
   draft: 'Draft 2/5',
   action: 'Action needed',
 };
 
-const STATUS_STYLES: Record<Business['status'], string> = {
+const STATUS_STYLES: Record<BusinessStatus, string> = {
   verified: styles.tagVerified,
   draft: styles.tagDraft,
   action: styles.tagAction,
 };
 
 // Memoized icon components
-const PlusIcon = memo(() => (
-  <svg width="20" height="20" viewBox="0 0 20 20">
-    <path
-      d="M10 3.5v13M3.5 10h13"
-      fill="none"
-      stroke="#fff"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-    />
-  </svg>
-));
-PlusIcon.displayName = 'PlusIcon';
+const PlusIcon = memo(function PlusIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <path
+        d="M10 3.5v13M3.5 10h13"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+});
 
-const CheckIcon = memo(() => (
-  <svg width="20" height="20" viewBox="0 0 20 20">
-    <path
-      d="M3.5 10.5l4.2 4.2L16.5 5.8"
-      fill="none"
-      stroke="#04262C"
-      strokeWidth="2.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-));
-CheckIcon.displayName = 'CheckIcon';
+const CheckIcon = memo(function CheckIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <path
+        d="M3.5 10.5l4.2 4.2L16.5 5.8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+});
 
 // Memoized background component
-const BackgroundEffects = memo(() => (
-  <div className={styles.backgroundEffects}>
-    <div className={styles.glowIndigo} />
-    <div className={styles.glowCyan} />
-  </div>
-));
-BackgroundEffects.displayName = 'BackgroundEffects';
+const BackgroundEffects = memo(function BackgroundEffects() {
+  return (
+    <div className={styles.backgroundEffects}>
+      <div className={styles.glowIndigo} />
+      <div className={styles.glowCyan} />
+    </div>
+  );
+});
 
-export const BusinessOnboarding = memo(() => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  // Memoized user display values
-  const userInitials = useMemo(() => {
-    if (user?.email) {
-      return user.email.substring(0, 2).toUpperCase();
-    }
-    return 'AR';
-  }, [user?.email]);
-
-  const userName = useMemo(() => {
-    if (user?.fullName) {
-      return user.fullName;
-    }
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
-    return 'User';
-  }, [user?.fullName, user?.email]);
-
-  // Memoized event handlers
-  const handleBookConsultation = useCallback(() => {
-    navigate(ROUTES.CONSULTATION_INTRO);
-  }, [navigate]);
-
-  const handleEnterBusiness = useCallback(() => {
-    // TODO: Navigate to existing business flow
-    console.log('Enter different business clicked');
-  }, []);
-
-  const handleNoGst = useCallback(() => {
-    // TODO: Navigate to no GST flow
-    console.log('No GST clicked');
-  }, []);
-
-  const handleSelectBusiness = useCallback((businessId: string) => {
-    // TODO: Navigate to business details flow
-    console.log('Selected business:', businessId);
-  }, []);
+export const BusinessOnboarding = memo(function BusinessOnboarding() {
+  const {
+    userInitials,
+    userName,
+    handleBookConsultation,
+    handleEnterBusiness,
+    handleNoGst,
+    handleSelectBusiness,
+    businesses,
+  } = useBusinessOnboarding();
 
   return (
     <div className={styles.container}>
@@ -220,7 +153,7 @@ export const BusinessOnboarding = memo(() => {
 
               <div className={styles.businessList}>
                 <div className={styles.businessListHeader}>FOUND ON YOUR PAN & MOBILE</div>
-                {mockBusinesses.map((business) => (
+                {businesses.map((business) => (
                   <button
                     key={business.id}
                     type="button"
@@ -259,5 +192,3 @@ export const BusinessOnboarding = memo(() => {
     </div>
   );
 });
-
-BusinessOnboarding.displayName = 'BusinessOnboarding';

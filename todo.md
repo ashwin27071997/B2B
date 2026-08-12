@@ -1,0 +1,7 @@
+- datadog/logging setup
+- deployment with jenkins
+- sonarqube if needed
+- lint and prettier
+- types to be defined in separate file
+- dynamic .env file population and parameter store kind of appraoch
+- connect only behid vpn

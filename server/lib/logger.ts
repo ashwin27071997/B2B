@@ -1,0 +1,24 @@
+import pino from 'pino';
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+export const logger = pino({
+  level: process.env.LOG_LEVEL || (isDevelopment ? 'debug' : 'info'),
+  transport: isDevelopment
+    ? {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          ignore: 'pid,hostname',
+          translateTime: 'SYS:standard',
+        },
+      }
+    : undefined,
+  // Redact sensitive fields
+  redact: {
+    paths: ['req.headers.authorization', 'password', 'token', 'apiKey'],
+    censor: '[REDACTED]',
+  },
+});
+
+export type Logger = typeof logger;
