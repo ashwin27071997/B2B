@@ -1,5 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { config } from '../config';
+import jwt from 'jsonwebtoken';
+import { config } from '../config/index.js';
+import { logger } from '../lib/logger.js';
 
 /**
  * Authentication Middleware
@@ -11,10 +13,82 @@ export interface AuthenticatedRequest extends Request {
     id: string;
     email: string;
     role?: string;
+    aud?: string;
   };
   token?: string;
 }
 
+interface SupabaseJWTPayload {
+  sub: string;
+  email?: string;
+  role?: string;
+  aud?: string;
+  exp?: number;
+  iat?: number;
+}
+
+/**
+ * Verify JWT token using Supabase JWT secret
+ * Validates signature, expiration, and claims
+ */
+function verifySupabaseToken(token: string): SupabaseJWTPayload | null {
+  const secret = config.supabase.jwtSecret;
+
+  // Production requires proper JWT verification
+  if (!secret) {
+    if (config.isProduction) {
+      logger.error('SUPABASE_JWT_SECRET not configured in production');
+      return null;
+    }
+    // Development fallback - decode only (logs warning)
+    logger.warn('JWT verification disabled - using decode-only mode (dev only)');
+    return decodeJWTUnsafe(token);
+  }
+
+  try {
+    const payload = jwt.verify(token, secret, {
+      algorithms: ['HS256'],
+      audience: 'authenticated',
+    }) as SupabaseJWTPayload;
+
+    return payload;
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      logger.debug('JWT token expired');
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      logger.debug({ message: (error as Error).message }, 'JWT verification failed');
+    }
+    return null;
+  }
+}
+
+/**
+ * Decode JWT without verification (development fallback only)
+ * WARNING: Does not verify signature - tokens can be forged
+ */
+function decodeJWTUnsafe(token: string): SupabaseJWTPayload | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const payload = Buffer.from(parts[1], 'base64').toString('utf-8');
+    const decoded = JSON.parse(payload) as SupabaseJWTPayload;
+
+    // Check expiration manually
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+      return null;
+    }
+
+    return decoded;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Required authentication middleware
+ * Returns 401 if no valid token present
+ */
 export async function authMiddleware(
   req: AuthenticatedRequest,
   res: Response,
@@ -32,16 +106,12 @@ export async function authMiddleware(
     }
 
     const token = authHeader.split(' ')[1];
-
-    // Verify token with Supabase
-    // In production, you'd verify the JWT signature using Supabase's JWT secret
-    // For now, we'll decode and forward the token to backend for verification
-    const payload = decodeJWT(token);
+    const payload = verifySupabaseToken(token);
 
     if (!payload || !payload.sub) {
       res.status(401).json({
         error: 'Unauthorized',
-        message: 'Invalid token',
+        message: 'Invalid or expired token',
       });
       return;
     }
@@ -51,12 +121,13 @@ export async function authMiddleware(
       id: payload.sub,
       email: payload.email || '',
       role: payload.role,
+      aud: payload.aud,
     };
     req.token = token;
 
     next();
   } catch (error) {
-    console.error('[Auth Error]', error);
+    logger.error({ error }, 'Auth middleware error');
     res.status(401).json({
       error: 'Unauthorized',
       message: 'Token verification failed',
@@ -64,21 +135,10 @@ export async function authMiddleware(
   }
 }
 
-// Simple JWT decode (payload only, no verification)
-// In production, use proper JWT verification with Supabase secret
-function decodeJWT(token: string): Record<string, unknown> | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-
-    const payload = Buffer.from(parts[1], 'base64').toString('utf-8');
-    return JSON.parse(payload);
-  } catch {
-    return null;
-  }
-}
-
-// Optional auth - doesn't fail if no token, but attaches user if present
+/**
+ * Optional authentication middleware
+ * Doesn't fail if no token, but attaches user if valid token present
+ */
 export async function optionalAuthMiddleware(
   req: AuthenticatedRequest,
   res: Response,
@@ -89,13 +149,14 @@ export async function optionalAuthMiddleware(
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      const payload = decodeJWT(token);
+      const payload = verifySupabaseToken(token);
 
       if (payload && payload.sub) {
         req.user = {
-          id: payload.sub as string,
-          email: (payload.email as string) || '',
-          role: payload.role as string,
+          id: payload.sub,
+          email: payload.email || '',
+          role: payload.role,
+          aud: payload.aud,
         };
         req.token = token;
       }
@@ -103,7 +164,6 @@ export async function optionalAuthMiddleware(
 
     next();
   } catch {
-    // Continue without auth
     next();
   }
 }
