@@ -20,6 +20,7 @@
 | **Hosting (Frontend)** | Vercel | Best DX, generous free tier |
 | **Hosting (Backend)** | Fly.io | No sleep, 3 free VMs, Docker |
 | **CI/CD** | GitHub Actions | Free, zero maintenance, production-grade |
+| **Secrets** | Doppler | Centralized, team-ready, syncs to Vercel/Fly.io |
 | **Email** | Resend | 3K emails/mo free, best DX |
 | **Monitoring** | Sentry (free tier) | Error tracking, 5K events/mo |
 | **Background Jobs** | BullMQ + Upstash Redis | When needed, 10K commands/day free |
@@ -391,7 +392,59 @@ flyctl deploy --image registry.fly.io/ledgerline-api:v123 --app ledgerline-api
 
 ---
 
-### 5. Email: Resend
+### 8. Secrets Management: Doppler
+
+**Why Doppler:**
+- 5 projects free (we have 2 repos)
+- Syncs directly to Vercel, Fly.io, GitHub Actions
+- CLI for local development
+- Team sharing built-in
+- No self-hosting required
+
+**How It Works:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         DOPPLER                                  │
+│  (Single source of truth for all secrets)                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│   │     dev     │  │   staging   │  │ production  │             │
+│   │ environment │  │ environment │  │ environment │             │
+│   └──────┬──────┘  └──────┬──────┘  └──────┬──────┘             │
+│          │                │                │                     │
+└──────────┼────────────────┼────────────────┼─────────────────────┘
+           │                │                │
+           ▼                ▼                ▼
+     ┌──────────┐    ┌──────────┐    ┌──────────┐
+     │  Local   │    │  Vercel  │    │  Fly.io  │
+     │   Dev    │    │ Preview  │    │   Prod   │
+     └──────────┘    └──────────┘    └──────────┘
+```
+
+**Setup Commands:**
+```bash
+# Install CLI (macOS)
+brew install dopplerhq/cli/doppler
+
+# Login
+doppler login
+
+# Setup in repo
+doppler setup
+
+# Run with secrets injected
+doppler run -- npm run dev
+```
+
+**Integrations:**
+- Vercel: Doppler → Integrations → Vercel (auto-sync)
+- Fly.io: `doppler secrets download --no-file --format env | flyctl secrets import`
+- GitHub Actions: Doppler → Integrations → GitHub (for CI secrets)
+
+---
+
+### 9. Email: Resend
 
 **Why Resend over SendGrid/Mailgun:**
 - 3,000 emails/month free (enough for early stage)
@@ -616,6 +669,7 @@ Since mastering the stack is a goal, here's the recommended order:
 | 2026-08-12 | Vercel for frontend | Best DX, free tier | Cloudflare Pages, Netlify |
 | 2026-08-12 | Resend for email | Best DX, free tier | SendGrid, Mailgun |
 | 2026-08-12 | GitHub Actions for CI/CD | Free, zero maintenance, production-grade | Jenkins (requires server) |
+| 2026-08-12 | Doppler for secrets | Centralized, team-ready, auto-syncs | Infisical, AWS SSM, local .env |
 
 ---
 
