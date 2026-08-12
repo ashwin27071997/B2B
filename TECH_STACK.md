@@ -19,6 +19,7 @@
 | **File Storage** | Supabase Storage | 1GB free, integrated with RLS |
 | **Hosting (Frontend)** | Vercel | Best DX, generous free tier |
 | **Hosting (Backend)** | Fly.io | No sleep, 3 free VMs, Docker |
+| **CI/CD** | GitHub Actions | Free, zero maintenance, production-grade |
 | **Email** | Resend | 3K emails/mo free, best DX |
 | **Monitoring** | Sentry (free tier) | Error tracking, 5K events/mo |
 | **Background Jobs** | BullMQ + Upstash Redis | When needed, 10K commands/day free |
@@ -217,6 +218,179 @@ primary_region = "bom"  # Mumbai
 
 ---
 
+### 7. CI/CD: GitHub Actions (Not Jenkins)
+
+**Why GitHub Actions over Jenkins:**
+
+| Aspect | Jenkins | GitHub Actions |
+|--------|---------|----------------|
+| Infrastructure | Requires dedicated server ($20-50/mo) | Free (included with GitHub) |
+| Maintenance | You manage updates, plugins, security | Zero maintenance |
+| Complexity | High (Groovy pipelines, plugins) | Low (YAML) |
+| Free tier | No | 2,000 mins/mo for private repos |
+
+**Production Features (All Free):**
+- Automated tests on every PR
+- Preview environments (Vercel auto-creates)
+- Manual approval gates (GitHub Environments)
+- Rollback capability
+- Secrets management
+- Audit trail
+
+**CI/CD Pipeline Architecture:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     GITHUB ACTIONS (FREE)                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   Push to feature branch                                         │
+│         │                                                        │
+│         ▼                                                        │
+│   ┌─────────────┐                                                │
+│   │   Lint      │──► Fail? → Block PR                            │
+│   │   TypeCheck │                                                │
+│   │   Test      │                                                │
+│   └─────────────┘                                                │
+│         │                                                        │
+│         ▼                                                        │
+│   ┌─────────────────────────────────────────────────────┐       │
+│   │ FRONTEND (Vercel)        │ BACKEND (Fly.io)         │       │
+│   │ Auto preview URL         │ Preview env (optional)   │       │
+│   └─────────────────────────────────────────────────────┘       │
+│         │                                                        │
+│         ▼                                                        │
+│   PR Merged to main                                              │
+│         │                                                        │
+│         ▼                                                        │
+│   ┌─────────────────────────────────────────────────────┐       │
+│   │ PRODUCTION DEPLOY                                    │       │
+│   │ Frontend → Vercel (auto)                            │       │
+│   │ Backend → Fly.io (via GitHub Actions)               │       │
+│   └─────────────────────────────────────────────────────┘       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Frontend CI Workflow (.github/workflows/frontend-ci.yml):**
+```yaml
+name: Frontend CI
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'package.json'
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      # - run: npm run test (when tests are added)
+```
+
+**Backend Deploy Workflow (.github/workflows/backend-deploy.yml):**
+```yaml
+name: Backend Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly.io
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+```
+
+**Full Backend CI/CD with Staging + Production (.github/workflows/backend-ci-cd.yml):**
+```yaml
+name: Backend CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+jobs:
+  # Run on every PR
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test
+
+  # Only deploy when merged to main
+  deploy-staging:
+    needs: quality
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --app ledgerline-api-staging
+
+  # Manual approval for production (via GitHub Environments)
+  deploy-production:
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production  # Requires manual approval in GitHub
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --app ledgerline-api
+```
+
+**Setting Up Manual Approval (GitHub Environments):**
+1. Go to repo → Settings → Environments
+2. Create `staging` and `production` environments
+3. For `production`, add:
+   - Required reviewers (yourself or team)
+   - Wait timer (optional, e.g., 10 min delay)
+   - Branch restrictions (only `main`)
+
+**Rollback Commands:**
+```bash
+# List recent deployments
+flyctl releases list --app ledgerline-api
+
+# Rollback to previous version
+flyctl deploy --image registry.fly.io/ledgerline-api:v123 --app ledgerline-api
+```
+
+---
+
 ### 5. Email: Resend
 
 **Why Resend over SendGrid/Mailgun:**
@@ -250,6 +424,7 @@ primary_region = "bom"  # Mumbai
 
 | Technology | Why Not |
 |------------|---------|
+| **Jenkins** | Requires dedicated server; GitHub Actions is free and sufficient |
 | **Supabase Edge Functions** | Need full Node.js for complex backend logic |
 | **Redis** | Premature; add with Upstash when background jobs needed |
 | **Kubernetes** | Massive overkill; Fly.io handles orchestration |
@@ -440,6 +615,7 @@ Since mastering the stack is a goal, here's the recommended order:
 | 2026-08-12 | Separate backend repo | Clear separation, independent deploys | Monorepo with Turborepo |
 | 2026-08-12 | Vercel for frontend | Best DX, free tier | Cloudflare Pages, Netlify |
 | 2026-08-12 | Resend for email | Best DX, free tier | SendGrid, Mailgun |
+| 2026-08-12 | GitHub Actions for CI/CD | Free, zero maintenance, production-grade | Jenkins (requires server) |
 
 ---
 
